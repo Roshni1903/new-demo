@@ -14,6 +14,7 @@ import ProtectedRoute from "./component/ProtectedRoute";
 import AdminDashboard from "./component/Teacher/AdminDashboard";
 import StudentDashboard from "./component/Student/StudentDashboard";
 import Profile from "./component/CommonUser/Profile";
+import CreateExam from "./component/Teacher/CreateExam";
 export default function App() {
   return (
     <>
@@ -23,6 +24,7 @@ export default function App() {
         <Navbar />
 
         <Routes>
+          <Route path="createExam" element={<CreateExam />} />
           <Route path="/" element={<LoginUi desc={loginDesc} />}></Route>
           <Route
             path="/register"
@@ -45,8 +47,7 @@ export default function App() {
               </ProtectedRoute>
             }
           >
-            <Route path="*" element={<h1>page not Found!</h1>}></Route>
-            <Route path="profile" element={<Profile />}></Route>
+
           </Route>
         </Routes>
       </BrowserRouter>

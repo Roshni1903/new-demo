@@ -1,10 +1,10 @@
 .navbar {
     display: flex;
-    width: 100vw;
     background-color: #E8C999;
     height: 60px;
     gap: 10px;
     align-items: center;
+    justify-content: flex-end;
 }
 
 
@@ -12,8 +12,6 @@
 .navbtn {
     display: flex;
     gap: 8px;
-    margin-left: 83%;
-
 }
 
 .btn {

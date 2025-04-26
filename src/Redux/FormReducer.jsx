@@ -83,16 +83,9 @@ const FormReducer = createSlice({
         state[action.payload.type].data[key] = "";
       });
     },
-    deleteToken: (state) => {
-      localStorage.clear()
-      state.token = ""
-    },
-    setToken: (state, action) => {
-      console.log(action.payload)
-      state.token = action.payload.token
-    }
+
   },
 });
-export const { updateData, setError, clearData, deleteToken, setToken } =
+export const { updateData, setError, clearData } =
   FormReducer.actions;
 export default FormReducer.reducer;

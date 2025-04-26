@@ -3,7 +3,7 @@ import loginDesc from "../Description/loginDesc";
 import commonContainer from "./commonContainer";
 import { toast } from "react-toastify";
 import instance from "/src/component/axiosInstance.jsx";
-import { setError, clearData, setToken } from "../Redux/FormReducer";
+import { setError, clearData } from "../Redux/FormReducer";
 import { useDispatch } from "react-redux";
 import { useState } from "react";
 export default function Login() {
@@ -24,7 +24,6 @@ export default function Login() {
         method: "POST",
         data,
       });
-      console.log(response);
       if (response.data.message) {
         toast(response.data.message, {
           position: "top-center",
@@ -35,7 +34,6 @@ export default function Login() {
         localStorage.setItem("role", response.data.data.role);
         localStorage.setItem("token", response.data.data.token);
 
-        dispatch(setToken({ "token": localStorage.getItem('token') }))
         navigate("/dashboard");
       }
       setLoading(false);
