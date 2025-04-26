@@ -1,0 +1,20 @@
+.navbar{
+    display: flex;
+    width:100vw;
+    background-color: navy;
+    height:60px;
+    gap:10px;
+    align-items: center;
+  
+
+}
+.btn{
+    background-color: #EB455F;
+    color:white;
+    text-decoration: none;
+   font-size: 17px;
+    border:none;
+    padding:8px 15px;
+    border-radius:5px;
+}
+

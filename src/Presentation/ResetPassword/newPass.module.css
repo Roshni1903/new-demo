@@ -1,0 +1,36 @@
+.flex{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height:100vh;
+}
+.btn{
+    padding:10px 30px; 
+    background-color: navy;
+    border-radius: 5px;
+    border: none;
+    margin: 10px auto;
+    color:white;
+}
+.inner{
+    display: flex;
+    flex-direction: column;
+    gap:5px;
+    justify-content: center;
+    width:250px;
+    padding:20px 15px;
+    border:none;
+    box-shadow: 0.2px 0.2px 5px 1px black;
+    border-radius: 5px;
+}
+.disable{
+    background-color: rgba(0, 0, 128, 0.456);
+ 
+    padding:10px 18px;
+    border-radius: 5px;
+    border: none;
+    margin: 10px auto;
+    color:white;
+ 
+  }

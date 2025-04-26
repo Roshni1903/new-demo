@@ -1,0 +1,36 @@
+
+.flex{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height:100vh;
+
+  
+  }
+  .inner{
+      display: flex;
+      flex-direction: column;
+      gap:5px;
+      justify-content: center;
+      width:250px;
+      height:210px;
+      border:none;
+    padding:10px 20px;
+      box-shadow: 0.2px 0.2px 5px 1px black;
+      border-radius: 5px;
+  
+  }
+  .btn{
+    padding:15px 30px; 
+    background-color: navy;
+    border-radius: 5px;
+    border: none;
+    margin: 10px auto;
+    color:white;
+  
+  }
+  p{
+    text-decoration: none;
+    margin-top:25px;
+  }
