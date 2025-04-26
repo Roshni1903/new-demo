@@ -11,21 +11,29 @@ export default function RegisterUi({ desc }) {
   return (
     <div className={styles.flex}>
       <ToastContainer />
-      <h1>Register Here</h1>
+      <div className={styles.con}>
+        <div className={styles.left}>
+          <h2>Welcome to our platform</h2>
+          <p>Enter your details to register with us.</p>
 
-      <form onSubmit={(e) => handleSubmit(e)} className={styles.inner}>
-        {desc.map((element) => {
-          return FormUi(element, data, error, handleChange, handleSubmit);
-        })}
+        </div>
 
-        {loading?<LoadingSpinner/>:<button
-          className={ styles.btn}
-          type="submit"
-          disabled={loading}
-        >
-         Register
-        </button>}
-      </form>
+
+        <form onSubmit={(e) => handleSubmit(e)} className={styles.inner}>
+          <h1>Register Here</h1>
+          {desc.map((element) => {
+            return FormUi(element, data, error, handleChange, handleSubmit);
+          })}
+
+          {loading ? <LoadingSpinner /> : <button
+            className={styles.btn}
+            type="submit"
+            disabled={loading}
+          >
+            Register
+          </button>}
+        </form>
+      </div>
     </div>
   );
 }

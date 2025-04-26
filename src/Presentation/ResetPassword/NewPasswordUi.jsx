@@ -13,7 +13,7 @@ export default function NewPasswordUi({ desc }) {
         {desc.map((element) => {
           return FormUi(element, data, error, handleChange);
         })}
-        <button
+        {/* <button
           type="submit"
           onClick={(e) => {
             handleSubmit(e);
@@ -21,7 +21,17 @@ export default function NewPasswordUi({ desc }) {
           className={loading ? styles.disable : styles.btn}
         >
           {loading ? "processing..." : "set password"}
-        </button>
+        </button> */}
+        {loading ? <LoadingSpinner /> : <button
+          onClick={(e) => {
+            handleSubmit(e);
+          }}
+          className={styles.btn}
+          type="submit"
+          disabled={loading}
+        >
+          set password
+        </button>}
       </form>
     </div>
   );
