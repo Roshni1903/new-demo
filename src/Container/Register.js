@@ -3,9 +3,9 @@ import registerDesc from "../Description/registerDesc";
 import commonContainer from "./commonContainer";
 import { toast } from "react-toastify";
 import instance from "/src/component/axiosInstance.jsx";
-import { setError, clearData, setLoading } from "../Redux/FormReducer";
+import { setError, clearData } from "../Redux/FormReducer";
 import { useDispatch } from "react-redux";
-import { React, useState } from "react";
+import { useState } from "react";
 export default function Register() {
   const [loading, setLoading] = useState(false);
 

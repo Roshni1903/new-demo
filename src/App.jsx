@@ -45,6 +45,7 @@ export default function App() {
               </ProtectedRoute>
             }
           >
+            <Route path="*" element={<h1>page not Found!</h1>}></Route>
             <Route path="profile" element={<Profile />}></Route>
           </Route>
         </Routes>
@@ -53,5 +54,5 @@ export default function App() {
   );
 }
 
-  
+
 

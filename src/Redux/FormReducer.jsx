@@ -53,11 +53,14 @@ const getForm = (forms) => {
       error[value.name] = "";
     });
     initialstate[form] = { data, error };
+
+
   });
+  initialstate['token'] = "";
   return initialstate;
 };
 const initialState = getForm(forms);
-
+console.log(initialState)
 const FormReducer = createSlice({
   name: "formReducer",
   initialState,
@@ -80,8 +83,16 @@ const FormReducer = createSlice({
         state[action.payload.type].data[key] = "";
       });
     },
+    deleteToken: (state) => {
+      localStorage.clear()
+      state.token = ""
+    },
+    setToken: (state, action) => {
+      console.log(action.payload)
+      state.token = action.payload.token
+    }
   },
 });
-export const { updateData, setError, clearData, setLoading } =
+export const { updateData, setError, clearData, deleteToken, setToken } =
   FormReducer.actions;
 export default FormReducer.reducer;
