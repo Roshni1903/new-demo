@@ -6,6 +6,7 @@ import styles from "/src/component/NavBar/navbar.module.css";
 const Navbar = () => {
   const [token, setToken] = useState(null);
   const location = useLocation();
+  const role = localStorage.getItem('role')
 
   useEffect(() => {
     const storedToken = localStorage.getItem('token');
@@ -23,10 +24,16 @@ const Navbar = () => {
     <div className={styles.navbar}>
       <div className={styles.navbtn}>
         {token ?
+          <>
+            {(role === "teacher" ? <Link className={styles.link} to="/create-exam">
+              <button className={styles.btn}> Create+ </button>
+            </Link> : null)}
+            <Link className={styles.link} to="/">
+              <button onClick={handleLogout} className={styles.btn}>Logout </button>
+            </Link>
+          </>
 
-          <Link className={styles.link} to="/">
-            <button onClick={handleLogout} className={styles.btn}>Logout </button>
-          </Link>
+
           :
           <>
             <Link className={styles.link} to="/">

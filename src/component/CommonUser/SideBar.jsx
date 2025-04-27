@@ -4,12 +4,12 @@ import styles from "./sidebar.module.css"
 const sidebar = {
   student: [
     { name: "Dashboard", path: "/dashboard" },
-    { name: "Profile", path: "/profile" },
+    { name: "Profile", path: "/dashboard/profile" },
   ],
   teacher: [
     { name: "Dashboard", path: "/dashboard" },
     { name: "Students", path: "/students" },
-    { name: "Profile", path: "/profile" },
+    { name: "Profile", path: "/dashboard/profile" },
   ],
 };
 
@@ -22,7 +22,7 @@ export default function SideBar({ role }) {
       <ul>
         {dashArray.map((item, index) => (
           <li key={index}>
-            <NavLink className={({ isActive }) => (isActive ? styles.active : "")} to={item.path}>{item.name}</NavLink>
+            <NavLink className={({ isActive }) => (isActive ? styles.active : "")} to={item.path} >{item.name}</NavLink>
           </li>
         ))}
       </ul>

@@ -56,7 +56,6 @@ const getForm = (forms) => {
 
 
   });
-  initialstate['token'] = "";
   return initialstate;
 };
 const initialState = getForm(forms);

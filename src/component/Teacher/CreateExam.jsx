@@ -1,35 +1,41 @@
+
 import React, { useState } from "react"
-export default function CreateExan() {
-    const [title, setTitle] = useState("")
+import styles from "./createExam.module.css"
+export default function CreateExam() {
+    const [subject, setSubject] = useState("")
     const [notes, setNotes] = useState("")
-    const queArray = {
-        question: "",
-        option: ["", "", "", ""],
-        ans: ""
+    const handleTitle = (e) => {
+        setSubject(e.target.value)
+        console.log(subject)
     }
-    const [que, setque] = useState(
-        Array.from({ length: 15 }, () => ({ ...queArray }))
-    )
-    const handletitle = (e) => {
-        setTitle(e.target.value)
-    }
-    const handleChange = (index, que, value) => {
-        console.log(index, que, value)
+    const handleNotes = (e) => {
+        const updateNotes = [...notes, e.target.value]
+        setNotes(updateNotes)
     }
     return (
-        <>
-            <form style={{ width: "400px" }}>
-                <input type="text" placeholder="subject name" value={title} onChange={(e) => { handletitle(e) }}></input>
-                <h2>Question</h2>
-                {que.map((que, index) => {
-                    return (
-                        <>
-                            <h4>question{index + 1}</h4>
-                            <input type="text" value={que.question} onChange={(e) => { handleChange(index, "question", e.target.value) }} />
-                        </>
-                    )
-                })}
+        <div className={styles.flex}>
+            <h1>create exam</h1>
+            <form className={styles.inner}>
+                {false ?
+                    <>
+                        <label htmlFor="subject">Title</label>
+                        <input type="text" placeholder="enter subject" value={subject} onChange={(e) =>
+                            handleTitle(e)
+                        } />
+                    </>
+                    : null}
+                <label htmlFor="question">Question-1</label>
+                <input type="text" />
+                <label htmlFor="options">Options</label>
+                <input type="text" placeholder="option1" />
+                <input type="text" placeholder="option2" />
+                <input type="text" placeholder="option3" />
+                <input type="text" placeholder="option4" />
+                <label htmlFor="answer">Answer</label>
+                <input type="text" placeholder="enter correct answer" />
+                <input type="text" value={notes} placeholder="enter notes" onChange={(e) => handleNotes(e)} />
             </form>
-        </>
+        </div>
+
     )
 }

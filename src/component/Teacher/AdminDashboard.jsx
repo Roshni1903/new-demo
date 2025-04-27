@@ -1,16 +1,18 @@
 import React, { useEffect } from "react";
 import instance from "../axiosInstance";
-import { jwtDecode } from "jwt-decode";
 export default function AdminDashboard() {
   const token = localStorage.getItem('token')
-  useEffect(() => {
 
+  useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await instance.get("dashboard/Teachers/viewExam", {
           headers: {
             'Authorization': `Bearer ${token}`,
+
+
           },
+
 
         });
 
