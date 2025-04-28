@@ -35,7 +35,7 @@ export default function CreateExam() {
                 newErrors.optionError = "All options are required";
             }
 
-            if (currentQuestion.answer === null) {
+            if (currentQuestion.answer === "") {
                 newErrors.answerError = "Please select a correct answer";
             }
         } else {
@@ -193,11 +193,11 @@ export default function CreateExam() {
                             name="answer"
                             type="text"
                             value={
-                                question[curIndex].answer !== null
+                                question[curIndex].answer !== ""
                                     ? question[curIndex].options[question[curIndex].answer]
                                     : ""
                             }
-                            placeholder="Correct answer"
+                            placeholder="select Correct answer from above"
                             readOnly
                         />
                         <ErrorContainer error={error.answerError} />
