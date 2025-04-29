@@ -12,17 +12,16 @@ import NewPasswordUi from "./Presentation/ResetPassword/NewPasswordUi";
 import ProtectedRoute from "./component/ProtectedRoute";
 import DashBoard from "./component/CommonUser/Dashboard";
 import { useLocation } from "react-router-dom";
-import CreateExam from "./component/Teacher/CreateExam";
 import Profile from "./component/CommonUser/Profile";
-
+import CreateExam from "./component/Teacher/CreateExam";
+import EditExam from "./component/Teacher/EditExam";
 export default function App() {
   const location = useLocation();
-  const role = localStorage.getItem('role')
+  const role = localStorage.getItem("role");
   const hideNavbar = location.pathname === "/404";
 
   return (
     <>
-
       {hideNavbar ? null : <Navbar />}
 
       <Routes>
@@ -47,18 +46,13 @@ export default function App() {
               <DashBoard role={role} />
             </ProtectedRoute>
           }
-        >
-        </Route>
+        ></Route>
+        <Route path="/edit-exam/:id" element={<EditExam />}></Route>
+
         <Route path="*" element={<Navigate to="/404" />}></Route>
         <Route path="/404" element={<h1>Page not found!</h1>} />
-        <Route
-          path="/dashboard/profile"
-          element={<Profile />}
-        ></Route>
+        <Route path="/dashboard/profile" element={<Profile />}></Route>
       </Routes>
     </>
   );
 }
-
-
-

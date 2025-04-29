@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { toast, ToastContainer } from "react-toastify";
 import styles from "./createExam.module.css";
-
-
+import instance from "../axiosInstance";
+import { emailRegex } from "../regex";
 export default function CreateExam() {
     const createEmptyQuestion = () => ({
         question: "",
@@ -13,14 +13,14 @@ export default function CreateExam() {
     const [subject, setSubject] = useState("");
     const [curIndex, setCurIndex] = useState(0);
     const [question, setQuestion] = useState([createEmptyQuestion()]);
-    const [notes, setNotes] = useState([]);
+    const [notes, setNotes] = useState([""]);
     const [error, setError] = useState({
         quesError: "",
         optionError: "",
         answerError: "",
+        subjectError: "",
     });
     const [edit, setEdit] = useState(false);
-
     const validate = (name, value) => {
         const newErrors = {};
         if (name === "allfield") {
@@ -38,24 +38,43 @@ export default function CreateExam() {
             if (currentQuestion.answer === "") {
                 newErrors.answerError = "Please select a correct answer";
             }
+            if (subject === "") {
+                newErrors.subjectError = "Please select subject";
+            }
         } else {
             switch (name) {
                 case "question":
                     newErrors.quesError = value === "" ? "Question is required" : "";
                     break;
                 case "option-text":
-                    newErrors.optionError = value === "" ? "All options are required" : "";
+                    newErrors.optionError =
+                        value === "" ? "All options are required" : "";
                     break;
                 case "answer":
-                    newErrors.answerError = value === "" ? "Select one correct answer!" : "";
+                    newErrors.answerError =
+                        value === "" ? "Select one correct answer!" : "";
+                    break;
+                case "subject":
+                    newErrors.subjectError = value === "" ? "Please select subject!" : "";
                     break;
                 default:
                     break;
             }
         }
-
         setError(newErrors);
         return newErrors;
+    };
+    const checkExisting = () => {
+        let include;
+        const quesValue = question[curIndex].question;
+        const optionValue = question[curIndex].options;
+        question.forEach((element, index) => {
+            if (element.question.includes(quesValue) && curIndex !== index) {
+                include = true;
+            }
+        });
+        new Set(optionValue).size !== optionValue.length ? (include = true) : null;
+        return include;
     };
 
     const handleQuesChange = (e) => {
@@ -89,28 +108,45 @@ export default function CreateExam() {
     };
 
     const handleSubject = (e) => {
+        const { name, value } = e.target;
         setSubject(e.target.value);
-    };
-
-    const handleNotes = (e) => {
-        setNotes([e.target.value]);
+        validate(name, value);
     };
 
     const handlePrevious = (e) => {
-        e.preventDefault();
-        setCurIndex(curIndex - 1);
+        if (edit) {
+            toast.error("Please save  changes before moving to the previous question.", {
+                position: "top-center",
+                autoClose: 1000,
+            });
+            return;
+        }
+        if (curIndex > 0) {
+            setCurIndex(curIndex - 1);
+        }
     };
-
+    console.log("ques", question);
     const handleNext = (e) => {
         e.preventDefault();
         const validationErrors = validate("allfield");
         if (Object.values(validationErrors).some((err) => err !== "")) return;
+        const include = checkExisting();
 
-        if (edit) {
-            toast.error("Please save the changes before proceeding.");
+        if (include) {
+            toast("Question already included or any of the options are same", {
+                autoClose: 1000,
+                position: "top-center",
+            });
             return;
         }
 
+        if (edit) {
+            toast.error("Please save the changes before proceeding.", {
+                position: "top-center",
+                autoClose: 1000,
+            });
+            return;
+        }
         if (curIndex < question.length - 1) {
             setCurIndex(curIndex + 1);
         } else {
@@ -120,13 +156,45 @@ export default function CreateExam() {
         }
     };
 
-    const saveChanges = () => {
-        setEdit(false);
+    const addNotes = () => {
+        setNotes([...notes, ""])
+    }
+    const handleNotes = (e, index) => {
+        const updateNotes = [...notes]
+        updateNotes[index] = e.target.value
+        setNotes(updateNotes)
+    }
+    const deleteNote = (rindex) => {
+        const updateNotes = notes.filter((_, index) => index !== rindex);
+        setNotes(updateNotes)
+    }
+    const saveChanges = (e) => {
+        e.preventDefault();
+        const validationErrors = validate("allfield");
+        if (Object.values(validationErrors).some((err) => err !== "")) return;
+        const include = checkExisting();
+        if (include) {
+            toast("Question already included or any of the options are same", {
+                autoClose: 1000,
+                position: "top-center",
+            });
+            return;
+        } else {
+            setEdit(false);
+            toast.success("saved successfully!", {
+                position: "top-center",
+                autoClose: 1000,
+            });
+        }
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        const examobj = {
+        const token = localStorage.getItem("token");
+
+        const validationErrors = validate("allfield");
+        if (Object.values(validationErrors).some((err) => err !== "")) return;
+        const exam = {
             subjectName: subject,
             questions: question.map((q) => ({
                 ...q,
@@ -134,7 +202,29 @@ export default function CreateExam() {
             })),
             notes: notes,
         };
-        console.log(examobj);
+
+        try {
+            const response = await instance({
+                url: "dashboard/Teachers/Exam",
+                method: "POST",
+                data: exam,
+                headers: {
+                    "access-token": token,
+                },
+            });
+            console.log(response);
+            if (response.data.message) {
+                toast(response.data.message, {
+                    position: "top-center",
+                    autoClose: 1000,
+                });
+            }
+            if (response.data.statusCode === 200) {
+                navigate("/dashboard");
+            }
+        } catch (e) {
+            console.log(e)
+        }
     };
 
     return (
@@ -152,6 +242,7 @@ export default function CreateExam() {
                             placeholder="Enter subject"
                             onChange={handleSubject}
                         />
+                        <ErrorContainer error={error.subjectError} />
                     </>
                 )}
 
@@ -198,7 +289,6 @@ export default function CreateExam() {
                                     : ""
                             }
                             placeholder="select Correct answer from above"
-                            readOnly
                         />
                         <ErrorContainer error={error.answerError} />
                     </>
@@ -214,7 +304,7 @@ export default function CreateExam() {
                     </button>
                     {curIndex < 14 ? (
                         <>
-                            <button className={styles.btn} onClick={saveChanges}>
+                            <button className={styles.btn} onClick={(e) => saveChanges(e)}>
                                 Save
                             </button>
                             <button className={styles.btn} onClick={handleNext}>
@@ -231,18 +321,29 @@ export default function CreateExam() {
                 {curIndex === 14 && (
                     <>
                         <label htmlFor="notes">Add notes</label>
-                        <input
-                            type="text"
-                            placeholder="Enter notes"
-                            onChange={handleNotes}
-                        />
+                        {notes.map((element, index) => {
+                            return (
+                                <div key={index} className={styles.note}>
+
+                                    <input
+                                        type="text"
+                                        value={element}
+                                        placeholder="Enter notes"
+                                        onChange={(e) => handleNotes(e, index)}
+                                    />
+                                    <button type="button" onClick={() => deleteNote(index)}>X</button>
+                                </div>
+                            );
+                        })}
+                        <button onClick={(e, index) => addNotes(e, index)}>
+                            Add Notes
+                        </button>
                     </>
                 )}
             </form>
         </div>
     );
 }
-
 
 const ErrorContainer = ({ error }) => {
     if (error) {
