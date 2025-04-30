@@ -1,14 +1,17 @@
 import React, { useEffect, useState } from "react";
-import instance from "../axiosInstance";
-import { useParams } from "react-router-dom";
-import styles from "./edit.module.css";
+import { useParams, useNavigate } from "react-router-dom";
+import instance from "/src/component/axiosInstance.jsx";
+import styles from "./editExam.module.css";
 import LoadingSpinner from "/src/component/LoadingSpinner/LoadingSpinner.jsx";
 import { toast, ToastContainer } from "react-toastify";
 
 export default function EditExam() {
+    const role = localStorage.getItem("role");
+
+    const navigate = useNavigate();
     const [question, setQuestion] = useState([]);
-    const [subjectName, setSubject] = useState()
-    const [notes, setNotes] = useState([])
+    const [subjectName, setSubject] = useState();
+    const [notes, setNotes] = useState([]);
     const [curIndex, setCurIndex] = useState(0);
     const [loading, setLoading] = useState(false);
     const { id } = useParams();
@@ -35,26 +38,21 @@ export default function EditExam() {
                 if (response.data.statusCode === 200) {
                     setQuestion(response.data.data.questions);
                 }
-                const examDetails = await instance.get(
-                    `dashboard/Teachers/viewExam`,
-                    {
-                        headers: {
-                            "access-token": token,
-                        },
-                    }
-                );
+                const examDetails = await instance.get(`dashboard/Teachers/viewExam`, {
+                    headers: {
+                        "access-token": token,
+                    },
+                });
                 const examList = examDetails.data.data;
                 if (examDetails.data.statusCode === 200) {
-                    const matchid = examList.find(element => id === element._id)
+                    const matchid = examList.find((element) => id === element._id);
                     if (matchid) {
                         const { subjectName, notes } = matchid;
                         setSubject(subjectName);
                         setNotes(notes);
                     }
-
                 }
-
-                setLoading(false)
+                setLoading(false);
             } catch (e) {
                 console.log(e);
             }
@@ -64,10 +62,9 @@ export default function EditExam() {
             fetchData();
         }
     }, [id, token]);
-    // console.log(subjectName)
-    // console.log(notes)
     const validate = (name, value) => {
-        const newErrors = {};
+        const newErrors = { ...error };
+
         if (name === "allfield") {
             const currentQuestion = question[curIndex];
 
@@ -83,17 +80,33 @@ export default function EditExam() {
             if (currentQuestion.answer === "") {
                 newErrors.answerError = "Please select a correct answer";
             }
+            if (subjectName === "") {
+                newErrors.subjectError = "Please select subject";
+            }
+            const notesError = Object.values(notes).some((element) => element === "");
+            if (notesError) {
+                newErrors.notesError = "Please enter notes NA if not applicable";
+            }
         } else {
             switch (name) {
                 case "question":
                     newErrors.quesError = value === "" ? "Question is required" : "";
                     break;
                 case "option-text":
-                    newErrors.optionError = value === "" ? "All options are required" : "";
+                    newErrors.optionError =
+                        value === "" ? "All options are required" : "";
                     break;
                 case "answer":
-                    newErrors.answerError = value === "" ? "Select one correct answer!" : "";
+                    newErrors.answerError =
+                        value === "" ? "Select one correct answer!" : "";
                     break;
+                case "subject":
+                    newErrors.subjectError = value === "" ? "Please select subject!" : "";
+                    break;
+                case "notes":
+                    newErrors.notesError =
+                        value === "" ? "Please enter notes NA if not applicable" : "";
+
                 default:
                     break;
             }
@@ -139,7 +152,6 @@ export default function EditExam() {
         setEdit(true);
     };
 
-
     const handleAnswerChange = (option) => {
         const update = [...question];
         update[curIndex].answer = option;
@@ -149,10 +161,13 @@ export default function EditExam() {
 
     const handlePrevious = (e) => {
         if (edit) {
-            toast.error("Please save  changes before moving to the previous question.", {
-                position: "top-center",
-                autoClose: 1000,
-            });
+            toast.error(
+                "Please save  changes before moving to the previous question.",
+                {
+                    position: "top-center",
+                    autoClose: 1000,
+                }
+            );
             return;
         }
         if (curIndex > 0) {
@@ -160,20 +175,36 @@ export default function EditExam() {
         }
     };
 
+    const handleSubject = (e) => {
+        const { name, value } = e.target;
+        setSubject(e.target.value);
+        validate(name, value);
+        setEdit(true);
+    };
+
+    //NOTES
+
+    const addNotes = () => {
+        setNotes([...notes, ""]);
+    };
+    const handleNotes = (e, index) => {
+        const updateNotes = [...notes];
+        updateNotes[index] = e.target.value;
+        setNotes(updateNotes);
+        validate(name, value);
+
+        setEdit(true);
+    };
+    const deleteNote = (rindex) => {
+        const updateNotes = notes.filter((_, index) => index !== rindex);
+        setNotes(updateNotes);
+    };
+
     const handleNext = (e) => {
         e.preventDefault();
 
         const validationErrors = validate("allfield");
         if (Object.values(validationErrors).some((err) => err !== "")) return;
-
-        const include = checkExisting();
-        if (include) {
-            toast("Question already included or any of the options are the same", {
-                autoClose: 1000,
-                position: "top-center",
-            });
-            return;
-        }
 
         if (edit) {
             toast.error("Please save the changes before proceeding.", {
@@ -210,6 +241,52 @@ export default function EditExam() {
         });
     };
 
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        const token = localStorage.getItem("token");
+        const validationErrors = validate("allfield");
+        if (Object.values(validationErrors).some((err) => err !== "")) return;
+        if (edit) {
+            toast.error(
+                "Please save  changes before moving to the previous question.",
+                {
+                    position: "top-center",
+                    autoClose: 1000,
+                }
+            );
+            return;
+        }
+        const exam = {
+            subjectName: subjectName,
+            questions: question,
+            notes: notes,
+        };
+        try {
+            const response = await instance({
+                url: `dashboard/Teachers/editExam?id=${id}`,
+                method: "PUT",
+                data: exam,
+                headers: {
+                    "access-token": token,
+                },
+            });
+            console.log(response);
+            if (response.data.message) {
+                toast(response.data.message, {
+                    position: "top-center",
+                    autoClose: 1000,
+                });
+            }
+            if (response.data.statusCode === 200) {
+                navigate("/dashboard");
+            }
+        } catch (e) {
+            toast.error("something went wrong!", {
+                position: "top-center",
+                autoClose: 1000,
+            });
+        }
+    };
     return (
         <>
             {loading ? (
@@ -217,10 +294,23 @@ export default function EditExam() {
                     <LoadingSpinner />
                 </div>
             ) : (
-
                 <div className={styles.flex}>
                     <ToastContainer />
-                    <form className={styles.inner}>
+                    <form onSubmit={handleSubmit} className={styles.inner}>
+                        {curIndex === 0 && (
+                            <>
+                                <h2>Edit Exam</h2>
+                                <label htmlFor="subject">Subject</label>
+                                <input
+                                    type="text"
+                                    value={subjectName}
+                                    name="subject"
+                                    placeholder="Enter subject"
+                                    onChange={handleSubject}
+                                />
+                                <ErrorContainer error={error.subjectError} />
+                            </>
+                        )}
                         {question.length > 0 && (
                             <>
                                 <label htmlFor="question">Question {curIndex + 1}</label>
@@ -260,7 +350,9 @@ export default function EditExam() {
                                     type="text"
                                     value={question[curIndex].answer}
                                     placeholder="Select correct answer from above"
+                                    readOnly
                                 />
+
                                 <ErrorContainer error={error.answerError} />
                             </>
                         )}
@@ -274,17 +366,21 @@ export default function EditExam() {
                             >
                                 Previous
                             </button>
+                            <button
+                                type="button"
+                                className={styles.btn}
+                                onClick={(e) => saveChanges(e)}
+                            >
+                                Save
+                            </button>
 
                             {curIndex < question.length - 1 ? (
                                 <>
                                     <button
                                         type="button"
                                         className={styles.btn}
-                                        onClick={(e) => saveChanges(e)}
+                                        onClick={handleNext}
                                     >
-                                        Save
-                                    </button>
-                                    <button type="button" className={styles.btn} onClick={handleNext}>
                                         Next
                                     </button>
                                 </>
@@ -294,6 +390,27 @@ export default function EditExam() {
                                 </button>
                             )}
                         </div>
+                        {curIndex === 14 && (
+                            <>
+                                <label htmlFor="notes">Add notes</label>
+                                {notes.map((element, index) => {
+                                    return (
+                                        <div key={index} className={styles.note}>
+                                            <input
+                                                type="text"
+                                                value={element}
+                                                placeholder="Enter notes"
+                                                onChange={(e) => handleNotes(e, index)}
+                                            />
+                                            <button type="button" onClick={() => deleteNote(index)}>
+                                                X
+                                            </button>
+                                        </div>
+                                    );
+                                })}
+                                <button onClick={addNotes}>Add Notes</button>
+                            </>
+                        )}
                     </form>
                 </div>
             )}

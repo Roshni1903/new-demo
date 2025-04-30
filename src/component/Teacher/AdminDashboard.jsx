@@ -3,12 +3,13 @@ import styles from "./admin.module.css";
 import { Link } from "react-router-dom";
 import LoadingSpinner from "/src/component/LoadingSpinner/LoadingSpinner.jsx";
 import { toast } from "react-toastify";
-import instance from "/src/component/axiosInstance.jsx"
+import instance from "/src/component/axiosInstance.jsx";
 
 export default function AdminDashboard() {
   const token = localStorage.getItem("token");
   const [exams, setExams] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [isDelete, setDelete] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -20,21 +21,49 @@ export default function AdminDashboard() {
           },
         });
         setExams(response.data.data);
-        setLoading(false)
+        setLoading(false);
       } catch (e) {
         toast.error("Something went wrong!", {
           position: "top-center",
           autoClose: 1000,
         });
-        setLoading(false)
+        setLoading(false);
       }
     };
-
+    setDelete(false);
     if (token) {
       fetchData();
     }
-  }, [token]);
+  }, [token, isDelete]);
 
+  const handleDelete = async (id) => {
+    const getConfirmation = confirm("Delete the exam?");
+    if (getConfirmation) {
+      setLoading(true);
+      try {
+        const response = await instance.delete(
+          `dashboard/Teachers/deleteExam?id=${id}`,
+          {
+            headers: {
+              "access-token": token,
+            },
+          }
+        );
+        console.log(response);
+        if (response.data.statusCode === 200) {
+          toast(response.data.message, {
+            position: "top-center",
+            autoClose: 1000,
+          });
+        }
+        setDelete(true);
+
+        setLoading(false);
+      } catch (e) {
+        console.log(e);
+      }
+    }
+  };
   return (
     <>
       {loading ? (
@@ -43,6 +72,7 @@ export default function AdminDashboard() {
         </div>
       ) : (
         <div className={styles.container}>
+          <h1>All Exams</h1>
           <table className={styles.table}>
             <thead>
               <tr>
@@ -61,7 +91,13 @@ export default function AdminDashboard() {
                       <Link to={`/edit-exam/${examElement._id}`}>
                         <button className={styles.btn}>Edit Exam</button>
                       </Link>
-                      <button className={styles.btn}>Delete Exam</button></div>
+                      <button
+                        onClick={() => handleDelete(examElement._id)}
+                        className={styles.btn}
+                      >
+                        Delete Exam
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}

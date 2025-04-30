@@ -4,12 +4,12 @@ import styles from "./sidebar.module.css"
 const sidebar = {
   student: [
     { name: "Dashboard", path: "/dashboard" },
-    { name: "Profile", path: "/dashboard/profile" },
+    { name: "Profile", path: "/profile" },
   ],
   teacher: [
     { name: "Dashboard", path: "/dashboard" },
     { name: "Students", path: "/students" },
-    { name: "Profile", path: "/dashboard/profile" },
+    { name: "Profile", path: "/profile" },
   ],
 };
 
