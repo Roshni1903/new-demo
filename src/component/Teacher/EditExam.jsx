@@ -7,6 +7,8 @@ import { toast, ToastContainer } from "react-toastify";
 
 export default function EditExam() {
     const [question, setQuestion] = useState([]);
+    const [subjectName, setSubject] = useState()
+    const [notes, setNotes] = useState([])
     const [curIndex, setCurIndex] = useState(0);
     const [loading, setLoading] = useState(false);
     const { id } = useParams();
@@ -33,11 +35,28 @@ export default function EditExam() {
                 if (response.data.statusCode === 200) {
                     setQuestion(response.data.data.questions);
                 }
-                console.log(response.data.data);
+                const examDetails = await instance.get(
+                    `dashboard/Teachers/viewExam`,
+                    {
+                        headers: {
+                            "access-token": token,
+                        },
+                    }
+                );
+                const examList = examDetails.data.data;
+                if (examDetails.data.statusCode === 200) {
+                    const matchid = examList.find(element => id === element._id)
+                    if (matchid) {
+                        const { subjectName, notes } = matchid;
+                        setSubject(subjectName);
+                        setNotes(notes);
+                    }
+
+                }
+
+                setLoading(false)
             } catch (e) {
                 console.log(e);
-            } finally {
-                setLoading(false);
             }
         };
 
@@ -45,7 +64,8 @@ export default function EditExam() {
             fetchData();
         }
     }, [id, token]);
-
+    // console.log(subjectName)
+    // console.log(notes)
     const validate = (name, value) => {
         const newErrors = {};
         if (name === "allfield") {
@@ -107,16 +127,18 @@ export default function EditExam() {
     const handleOptionChange = (e, index) => {
         const { value } = e.target;
         const update = [...question];
-        update[curIndex].options[index] = value;
 
-        if (update[curIndex].answer === index && value === "") {
-            update[curIndex].answer = null;
+        if (update[curIndex].answer === update[curIndex].options[index]) {
+            update[curIndex].answer = value;
         }
+
+        update[curIndex].options[index] = value;
 
         setQuestion(update);
         validate("option-text", value);
         setEdit(true);
     };
+
 
     const handleAnswerChange = (option) => {
         const update = [...question];
