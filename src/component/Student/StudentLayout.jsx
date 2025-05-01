@@ -9,7 +9,7 @@ export default function StudentLayout() {
     return (
         <div style={{ display: 'flex' }}>
             <SideBar role={role} />
-            <main style={{ marginLeft: '6%', padding: '20px', flex: 1 }}>
+            <main style={{ marginLeft: '40%', padding: '20px' }}>
                 <Outlet />
             </main>
         </div>

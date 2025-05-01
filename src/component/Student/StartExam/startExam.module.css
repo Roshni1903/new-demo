@@ -1,0 +1,84 @@
+.flex {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #f9f9f9;
+}
+
+.inner {
+    width: 400px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    justify-content: center;
+    padding: 20px 15px;
+    border: none;
+    box-shadow: 0.2px 0.2px 5px 1px black;
+    border-radius: 5px;
+    background-color: white;
+}
+
+.inner label {
+    font-size: 17px;
+    font-weight: bold;
+}
+
+input:not([type="radio"]) {
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 1rem;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+input:focus {
+    border-color: #4a90e2;
+    outline: none;
+    box-shadow: 0 0 3px #a4c8f0;
+}
+
+.btnContainer {
+    display: flex;
+    justify-content: space-between;
+}
+
+.btn {
+    background-color: #8E1616;
+    color: white;
+    font-size: 17px;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.optionContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.optionContainer input[type="radio"] {
+    margin-right: 10px;
+    width: 20px;
+    height: 20px;
+}
+
+.optionContainer label {
+    font-size: 16px;
+    font-weight: normal;
+    cursor: pointer;
+    display: inline-block;
+    text-align: left;
+}
+
+.spinnerContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}

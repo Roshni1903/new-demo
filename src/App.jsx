@@ -11,16 +11,21 @@ import newPassDesc from "./Description/newPassDesc";
 import NewPasswordUi from "./Presentation/ResetPassword/NewPasswordUi";
 import ProtectedRoute from "./component/Routes/ProtectedRoute";
 import { useLocation } from "react-router-dom";
+import CreateExam from "./component/Teacher/CreateExam/CreateExam";
+import EditExam from "./component/Teacher/EditExam/EditExam";
 import Profile from "./component/CommonUser/Profile";
-import CreateExam from "./component/Teacher/CreateExam"
-import EditExam from "./component/Teacher/EditExam";
-import Dashboard from "./component/CommonUser/Dashboard"
+import Dashboard from "./component/CommonUser/Dashboard";
 import TeacherLayout from "./component/Teacher/TeacherLayout";
 import StudentLayout from "./component/Student/StudentLayout";
 import PublicRoute from "./component/Routes/publicRoute";
+import ShowStudentData from "./component/Teacher/ShowStudentData/ShowStudentData";
+import ViewStudentDetail from "./component/Teacher/ViewStudentDetail/ViewStudentDetail";
+import StartExam from "./component/Student/StartExam/StartExam";
+import AdminDashboard from "./component/Teacher/AdminDashboard/AdminDashboard";
+import StudentDashboard from "./component/Student/StudentDashboard/StudentDashboard";
+// import SubmitReview from "./component/Student/SubmitReview/SubmitReview";
 export default function App() {
   const location = useLocation();
-  const role = localStorage.getItem("role");
   const hideNavbar = location.pathname === "/404";
 
   return (
@@ -33,6 +38,14 @@ export default function App() {
             <PublicRoute>
               <LoginUi desc={loginDesc} />
             </PublicRoute>
+          }
+        />
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
           }
         />
 
@@ -54,6 +67,7 @@ export default function App() {
         ></Route>
         <Route path="*" element={<Navigate to="/404" />}></Route>
         <Route path="/404" element={<h1>Page not found!</h1>} />
+
         <Route
           element={
             <ProtectedRoute>
@@ -61,13 +75,17 @@ export default function App() {
             </ProtectedRoute>
           }
         >
-          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/teacher/dashboard" element={<AdminDashboard />} />
+
           <Route path="/create-exam" element={<CreateExam />} />
           <Route path="/edit-exam/:id" element={<EditExam />} />
           <Route path="/profile" element={<Profile />} />
-
+          <Route path="/students" element={<ShowStudentData />} />
+          <Route
+            path="/view-student-detail/:id"
+            element={<ViewStudentDetail />}
+          />
         </Route>
-
         <Route
           element={
             <ProtectedRoute>
@@ -75,9 +93,12 @@ export default function App() {
             </ProtectedRoute>
           }
         >
-          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/student/dashboard" element={<StudentDashboard />} />
+
           <Route path="/profile" element={<Profile />} />
+          <Route path="/start-exam/:id" element={<StartExam />} />
         </Route>
+
 
         {/* <Route path="/create-exam" element={<CreateExam />} /> */}
         {/* <Route
@@ -90,7 +111,6 @@ export default function App() {
         ></Route> */}
         {/* <Route path="/edit-exam/:id" element={<EditExam />}></Route> */}
         {/* <Route path="/dashboard/profile" element={<Profile />}></Route> */}
-
       </Routes>
     </>
   );
