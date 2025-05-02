@@ -1,0 +1,116 @@
+import React, { useState, useEffect } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import styles from "./SubmitReview.module.css";
+
+export default function SubmitReview() {
+    const location = useLocation();
+    const navigate = useNavigate();
+
+    const { questions, answers } = location.state || {};
+    const [reviewData, setReviewData] = useState([]);
+    const [editableQuestionId, setEditableQuestionId] = useState(null);
+
+    useEffect(() => {
+        if (questions && answers) {
+            const data = questions.map((q) => ({
+                ...q,
+                selected: answers.find((a) => a.question === q._id)?.answer,
+            }));
+            setReviewData(data);
+        }
+    }, [questions, answers]);
+
+    const handleEdit = (questionId) => {
+        setEditableQuestionId(questionId);
+    };
+
+    const handleSave = () => {
+        setEditableQuestionId(null);
+    };
+
+    const handleOptionChange = (questionId, newAnswer) => {
+        setReviewData((prev) =>
+            prev.map((item) =>
+                item._id === questionId ? { ...item, selected: newAnswer } : item
+            )
+        );
+    };
+
+    const handleFinalSubmit = async () => {
+        const token = localStorage.getItem("token");
+        const finalAnswers = reviewData.map((q) => ({
+            question: q._id,
+            answer: q.selected,
+        }));
+
+        try {
+            const response = await fetch("http://your-api.com/student/submitExam", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "access-token": token,
+                },
+                body: JSON.stringify({ answers: finalAnswers }),
+            });
+
+            const result = await response.json();
+            if (result.statusCode === 200) {
+                alert("Exam submitted successfully!");
+                navigate("/dashboard");
+            } else {
+                alert("Something went wrong.");
+            }
+        } catch (e) {
+            console.error(e);
+            alert("Submission failed.");
+        }
+    };
+
+    return (
+        <div className= { styles.container } >
+        <h2>Review Your Answers </h2>
+    {
+        reviewData.map((item, index) => (
+            <div key= { item._id } className = { styles.questionBlock } >
+            <p>
+            <strong>Q{ index + 1}: </strong> {item.question}
+                </p>
+
+    {
+        item.options.map((opt, optIndex) => (
+            <label key= { optIndex } className = { styles.optionLabel } >
+            <input
+                type="radio"
+                name = {`question-${index}`}
+    value = { opt }
+    checked = { item.selected === opt }
+    onChange = {() => handleOptionChange(item._id, opt)
+}
+disabled = { editableQuestionId !== item._id}
+              />
+{ opt }
+</label>
+          ))}
+
+{
+    editableQuestionId === item._id ? (
+        <button onClick= { handleSave } className = { styles.editBtn } >
+            Save
+            </button>
+          ) : (
+        <button
+              onClick= {() => handleEdit(item._id)
+}
+className = { styles.editBtn }
+    >
+    Edit
+    </button>
+          )}
+</div>
+      ))}
+<button className={ styles.submitBtn } onClick = { handleFinalSubmit } >
+    Submit Final Answers
+        </button>
+        </div>
+  );
+}
