@@ -20,6 +20,7 @@ export default function EditExam() {
         quesError: "",
         optionError: "",
         answerError: "",
+        notesError: ""
     });
     const [edit, setEdit] = useState(false);
 
@@ -83,9 +84,10 @@ export default function EditExam() {
             if (subjectName === "") {
                 newErrors.subjectError = "Please select subject";
             }
-            const notesError = Object.values(notes).some((element) => element === "");
-            if (notesError) {
-                newErrors.notesError = "Please enter notes NA if not applicable";
+            if (notes.length === 0 || notes.some(note => note === "")) {
+                newErrors.notesError = "Please add at least one valid note.";
+            } else {
+                newErrors.notesError = "";
             }
         } else {
             switch (name) {
@@ -157,23 +159,22 @@ export default function EditExam() {
         update[curIndex].answer = option;
         setQuestion(update);
         validate("answer", option);
-    };
+        setEdit(true);
 
-    const handlePrevious = (e) => {
+    };
+    const handlePrevious = () => {
         if (edit) {
-            toast.error(
-                "Please save  changes before moving to the previous question.",
-                {
-                    position: "top-center",
-                    autoClose: 1000,
-                }
-            );
+            toast.error("Please save changes before moving to the previous question.", {
+                position: "top-center",
+                autoClose: 1000,
+            });
             return;
         }
         if (curIndex > 0) {
             setCurIndex(curIndex - 1);
         }
     };
+
 
     const handleSubject = (e) => {
         const { name, value } = e.target;
@@ -188,6 +189,7 @@ export default function EditExam() {
         setNotes([...notes, ""]);
     };
     const handleNotes = (e, index) => {
+        const { name, value } = e.target
         const updateNotes = [...notes];
         updateNotes[index] = e.target.value;
         setNotes(updateNotes);
@@ -205,6 +207,7 @@ export default function EditExam() {
 
         const validationErrors = validate("allfield");
         if (Object.values(validationErrors).some((err) => err !== "")) return;
+        checkExisting()
 
         if (edit) {
             toast.error("Please save the changes before proceeding.", {
@@ -225,14 +228,14 @@ export default function EditExam() {
         const validationErrors = validate("allfield");
         if (Object.values(validationErrors).some((err) => err !== "")) return;
 
-        const include = checkExisting();
-        if (include) {
-            toast("Question already included or any of the options are the same", {
-                autoClose: 1000,
-                position: "top-center",
-            });
-            return;
-        }
+        // const include = checkExisting();
+        // if (include) {
+        //     toast("Question already included or any of the options are the same", {
+        //         autoClose: 1000,
+        //         position: "top-center",
+        //     });
+        //     return;
+        // }
 
         setEdit(false);
         toast.success("Saved successfully!", {
@@ -398,6 +401,7 @@ export default function EditExam() {
                                         <div key={index} className={styles.note}>
                                             <input
                                                 type="text"
+                                                name="notes"
                                                 value={element}
                                                 placeholder="Enter notes"
                                                 onChange={(e) => handleNotes(e, index)}
@@ -408,7 +412,9 @@ export default function EditExam() {
                                         </div>
                                     );
                                 })}
-                                <button onClick={addNotes}>Add Notes</button>
+                                <ErrorContainer error={error.notesError} />
+
+                                <button type="button" onClick={addNotes}>Add Notes</button>
                             </>
                         )}
                     </form>

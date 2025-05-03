@@ -3,6 +3,8 @@ import registerDesc from "../Description/registerDesc";
 import loginDesc from "../Description/loginDesc";
 import ForgetDesc from "../Description/ForgetDesc";
 import newPassDesc from "../Description/newPassDesc";
+import profileDesc from "../Description/ProfileDesc";
+import resetPassDesc from "../Description/resetPassDesc";
 // console.log(registerDesc);
 // console.log(loginDesc);
 
@@ -11,6 +13,8 @@ const forms = {
   login: loginDesc,
   forget: ForgetDesc,
   newPass: newPassDesc,
+  changeProfile: profileDesc,
+  resetPassword: resetPassDesc,
 };
 // const initialState = {
 //   login: {
@@ -53,13 +57,11 @@ const getForm = (forms) => {
       error[value.name] = "";
     });
     initialstate[form] = { data, error };
-
-
   });
   return initialstate;
 };
 const initialState = getForm(forms);
-console.log(initialState)
+
 const FormReducer = createSlice({
   name: "formReducer",
   initialState,
@@ -82,9 +84,8 @@ const FormReducer = createSlice({
         state[action.payload.type].data[key] = "";
       });
     },
-
   },
 });
-export const { updateData, setError, clearData } =
+export const { updateData, setError, clearData, setLoading } =
   FormReducer.actions;
 export default FormReducer.reducer;

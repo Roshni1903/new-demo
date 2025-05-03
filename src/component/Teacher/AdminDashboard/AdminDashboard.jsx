@@ -71,39 +71,41 @@ export default function AdminDashboard() {
           <LoadingSpinner />
         </div>
       ) : (
-        <div className={styles.container}>
-          <h1>All Exams</h1>
-          <table className={styles.table}>
-            <thead>
-              <tr>
-                <th>Subject Name</th>
-                <th>Notes</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {exams.map((examElement) => (
-                <tr key={examElement._id}>
-                  <td>{examElement.subjectName}</td>
-                  <td>{examElement.notes}</td>
-                  <td>
-                    <div className={styles.actions}>
-                      <Link to={`/edit-exam/${examElement._id}`}>
-                        <button className={styles.btn}>Edit Exam</button>
-                      </Link>
-                      <button
-                        onClick={() => handleDelete(examElement._id)}
-                        className={styles.btn}
-                      >
-                        Delete Exam
-                      </button>
-                    </div>
-                  </td>
+        exams?.length === 0 ? <h2 style={{ marginLeft: "300px" }}>No exam found to display create first..</h2> :
+          <div className={styles.container}>
+            <h1>All Exams</h1>
+            <table className={styles.table}>
+              <thead>
+                <tr>
+                  <th>Subject Name</th>
+                  <th>Notes</th>
+                  <th>Actions</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody>
+
+                {exams?.map((examElement) => (
+                  <tr key={examElement._id}>
+                    <td>{examElement.subjectName}</td>
+                    <td>{examElement.notes}</td>
+                    <td>
+                      <div className={styles.actions}>
+                        <Link to={`/edit-exam/${examElement._id}`}>
+                          <button className={styles.btn}>Edit Exam</button>
+                        </Link>
+                        <button
+                          onClick={() => handleDelete(examElement._id)}
+                          className={styles.btn}
+                        >
+                          Delete Exam
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
       )}
     </>
   );

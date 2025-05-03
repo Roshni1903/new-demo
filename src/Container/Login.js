@@ -33,8 +33,6 @@ export default function Login() {
       if (response.data.statusCode === 200) {
         const { name, email, role, token } = response.data.data
         localStorage.setItem('role', role)
-        localStorage.setItem('email', email)
-        localStorage.setItem('name', name)
         localStorage.setItem('token', token)
 
         navigate("/dashboard");
