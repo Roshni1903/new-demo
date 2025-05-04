@@ -80,6 +80,8 @@ export default function EditExam() {
 
             if (currentQuestion.answer === "") {
                 newErrors.answerError = "Please select a correct answer";
+            } else {
+                newErrors.answerError = "";
             }
             if (subjectName === "") {
                 newErrors.subjectError = "Please select subject";
@@ -98,10 +100,9 @@ export default function EditExam() {
                     newErrors.optionError =
                         value === "" ? "All options are required" : "";
                     break;
-                case "answer":
-                    newErrors.answerError =
-                        value === "" ? "Select one correct answer!" : "";
-                    break;
+                // case "answer":
+                //     newErrors.answerError = value === "" ? "Select one correct answer!" : "";
+                //     break;
                 case "subject":
                     newErrors.subjectError = value === "" ? "Please select subject!" : "";
                     break;
@@ -146,8 +147,8 @@ export default function EditExam() {
         if (update[curIndex].answer === update[curIndex].options[index]) {
             update[curIndex].answer = value;
         }
-
         update[curIndex].options[index] = value;
+
 
         setQuestion(update);
         validate("option-text", value);

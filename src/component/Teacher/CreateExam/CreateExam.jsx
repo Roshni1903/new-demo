@@ -114,7 +114,6 @@ export default function CreateExam() {
 
         currentQuestion.options[index] = value;
 
-        // Reset answer if selected option is now empty or duplicate
         if (
             currentQuestion.answer === index &&
             (value === "" || currentQuestion.options.filter(opt => opt === value).length > 1)
@@ -124,10 +123,8 @@ export default function CreateExam() {
 
         setQuestion(updatedQuestions);
 
-        // Validation
         validate("option-text", value);
 
-        // Clear the answer error if valid
         if (
             typeof currentQuestion.answer === "number" &&
             currentQuestion.options[currentQuestion.answer]
